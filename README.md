@@ -1,5 +1,5 @@
-# InterviewRestBusinessSeconds
-Business Seconds API Interview
+# Interview Rest Business Seconds API
+Rest API to calculate Business Seconds for an Interview
 
 
 ## Hendrik de Wilde
@@ -42,3 +42,8 @@ pip install -r requirements.txt
 ## End point's URL
 ```/api/business_seconds/?start_time=2021-03-28T08:00:00-0200&end_time=2021-03-29T08:00:01-0200```
 
+
+## Tests
+pytest tests\test_Api\test_serializers.py
+pytest tests\test_Api\test_views.py
+pytest

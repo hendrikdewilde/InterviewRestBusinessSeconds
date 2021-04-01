@@ -37,7 +37,7 @@ class BusinessSecondsSerializer(serializers.Serializer):
         format = "%Y-%m-%dT%H:%M:%S%z"
         try:
             valid_time = datetime.datetime.strptime(value, format)
-        except ValueError:
+        except:
             msg = {'error': "The value is not a valid Time."
                             "The format must be YYYY-MM-DDThh:mm:ssTZD - "
                             "Ie. 2019-01-04T16:41:24+0200"}
@@ -45,30 +45,37 @@ class BusinessSecondsSerializer(serializers.Serializer):
 
         return valid_time
 
-    def count_business_seconds(self, start_time, end_time):
+    def count_seconds_for_start_date(self, start_time, end_time):
         # Set temp values
         temp_time_8 = start_time.replace(hour=8, minute=0, second=0)
         temp_time_17 = start_time.replace(hour=17, minute=0, second=0)
 
         # Count seconds for start date - 1st day
-        if start_time.isoweekday() < 6:
-            if start_time < temp_time_8 and end_time < temp_time_8:
-                seconds = 0
-            elif start_time < temp_time_8 and end_time > temp_time_17:
-                seconds = 9 * 60 * 60
-            elif start_time < temp_time_8 and end_time <= temp_time_17:
-                temp_var = end_time - temp_time_8
-                seconds = int(temp_var.seconds)
-            elif start_time >= temp_time_8 and start_time <= temp_time_17 and end_time > temp_time_17:
-                temp_var = temp_time_17 - start_time
-                seconds = int(temp_var.seconds)
-            elif start_time >= temp_time_8 and start_time <= temp_time_17 and end_time < temp_time_17:
-                temp_var = end_time - start_time
-                seconds = int(temp_var.seconds)
+        if start_time < end_time:
+            if start_time.isoweekday() < 6:
+                if start_time < temp_time_8 and end_time < temp_time_8:
+                    seconds = 0
+                elif start_time <= temp_time_8 and end_time >= temp_time_17:
+                    seconds = 9 * 60 * 60
+                elif start_time < temp_time_8 and end_time <= temp_time_17:
+                    temp_var = end_time - temp_time_8
+                    seconds = int(temp_var.seconds)
+                elif start_time >= temp_time_8 and start_time <= temp_time_17 and end_time >= temp_time_17:
+                    temp_var = temp_time_17 - start_time
+                    seconds = int(temp_var.seconds)
+                elif start_time >= temp_time_8 and start_time <= temp_time_17 and end_time <= temp_time_17:
+                    temp_var = end_time - start_time
+                    seconds = int(temp_var.seconds)
+                else:
+                    seconds = 0
             else:
                 seconds = 0
         else:
             seconds = 0
+        return seconds
+
+    def count_business_seconds(self, start_time, end_time):
+        seconds = self.count_seconds_for_start_date(start_time, end_time)
 
         # Count full days
         day_counter = datetime.timedelta(days=1)
@@ -77,15 +84,12 @@ class BusinessSecondsSerializer(serializers.Serializer):
 
         no_days = 0
         while start_time.date() < end_time.date():
-            if now.isoweekday() < 6:
+            if start_time.isoweekday() < 6:
                 no_days += 1
             start_time += day_counter
+        else:
+            seconds += no_days * 9 * 60 * 60
 
-        seconds += no_days * 9 * 60 * 60
-
-        if start_time.isoweekday() < 6:
-            if start_time < end_time:
-                temp_var = end_time - start_time
-                seconds += int(temp_var.seconds)
+        seconds += self.count_seconds_for_start_date(start_time, end_time)
 
         return seconds
