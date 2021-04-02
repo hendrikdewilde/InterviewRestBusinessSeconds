@@ -36,14 +36,28 @@ Python 3.6
 
 
 ## Packages Install
-pip install -r requirements.txt
+```pip install -r requirements.txt```
 
 
 ## End point's URL
 ```/api/business_seconds/?start_time=2021-03-28T08:00:00-0200&end_time=2021-03-29T08:00:01-0200```
 
 
+## Install Script
+Must be installed op Ubuntu 18.04.
+
+```cd ~```
+
+Git clone https://github.com/hendrikdewilde/InterviewRestBusinessSeconds.git
+
+```django_deploy_project.sh [<python-version>] [<domain-name>] [<current-app-path>]```
+
+Example: ```django_deploy_project.sh 3 mydomain.co.za /home/ubuntu/InterviewRestBusinessSeconds/```
+
+
 ## Tests
-pytest tests\test_Api\test_serializers.py
-pytest tests\test_Api\test_views.py
-pytest
+```pytest tests/test_Api/test_serializers.py```
+
+```pytest tests/test_Api/test_views.py```
+
+```pytest```
